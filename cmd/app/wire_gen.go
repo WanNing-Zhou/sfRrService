@@ -26,7 +26,9 @@ import (
 
 // wireApp init application.
 func wireApp(configuration *config.Configuration, lumberjackLogger *lumberjack.Logger, zapLogger *zap.Logger) (*App, func(), error) {
+	// 新建数据库连接
 	db := data.NewDB(configuration, zapLogger)
+	// 新建redis连接
 	client := data.NewRedis(configuration, zapLogger)
 	sonyflake := compo.NewSonyFlake()
 	dataData, cleanup, err := data.NewData(zapLogger, db, client, sonyflake)
