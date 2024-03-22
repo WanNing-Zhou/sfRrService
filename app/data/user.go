@@ -57,6 +57,7 @@ func (r *userRepo) Create(ctx context.Context, u *domain.User) (*domain.User, er
 	user.Name = u.Name
 	user.Mobile = u.Mobile
 	user.Password = u.Password
+	user.Email = u.Email
 
 	if err = r.data.DB(ctx).Create(&user).Error; err != nil {
 		return nil, err

@@ -51,7 +51,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userS.Login(c, form.Mobile, form.Password)
+	user, err := h.userS.Login(c, form.Email, form.Password)
 	if err != nil {
 		response.FailByErr(c, err)
 		return

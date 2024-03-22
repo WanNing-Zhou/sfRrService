@@ -20,7 +20,8 @@ func (register Register) GetMessages() ValidatorMessages {
 }
 
 type Login struct {
-	Mobile   string `form:"mobile" json:"mobile" binding:"required,mobile"`
+	//Mobile   string `form:"mobile" json:"mobile" binding:"required,mobile"`
+	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
 

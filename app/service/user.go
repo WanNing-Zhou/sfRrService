@@ -32,7 +32,7 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
 	//user, _ := s.uRepo.FindByMobile(ctx, param.Mobile)
 	user, _ := s.uRepo.FindByEmail(ctx, param.Email)
 	if user != nil {
-		return nil, cErr.BadRequest("手机号码已存在")
+		return nil, cErr.BadRequest("该邮箱已被注册")
 	}
 
 	// 创建用户
@@ -50,8 +50,10 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
 }
 
 // Login 登录
-func (s *UserService) Login(ctx *gin.Context, mobile, password string) (*domain.User, error) {
-	u, err := s.uRepo.FindByMobile(ctx, mobile)
+func (s *UserService) Login(ctx *gin.Context, email, password string) (*domain.User, error) {
+	//u, err := s.uRepo.FindByMobile(ctx, mobile)
+	// 根据邮箱查找账户
+	u, err := s.uRepo.FindByEmail(ctx, email)
 	if err != nil || !hash.BcryptMakeCheck([]byte(password), u.Password) {
 		return nil, cErr.BadRequest("用户名不存在或密码错误")
 	}
