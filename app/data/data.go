@@ -165,6 +165,8 @@ func (d *Data) DB(ctx context.Context) *gorm.DB {
 	return d.db
 }
 
+// 新建数据库事务
+
 // NewTransaction .
 func NewTransaction(d *Data) service.Transaction {
 	return d

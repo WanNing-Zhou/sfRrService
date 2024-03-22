@@ -48,6 +48,7 @@ func newApp(
 	}
 }
 
+// 初始化验证器
 func initValidator() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		// 注册自定义验证器

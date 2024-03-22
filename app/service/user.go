@@ -14,6 +14,7 @@ type UserRepo interface {
 	FindByID(context.Context, uint64) (*domain.User, error)
 	FindByMobile(context.Context, string) (*domain.User, error)
 	Create(context.Context, *domain.User) (*domain.User, error)
+	FindByEmail(context.Context, string) (*domain.User, error) // 根据Email寻找用户
 }
 
 type UserService struct {
@@ -28,15 +29,18 @@ func NewUserService(uRepo UserRepo, tm Transaction) *UserService {
 
 // Register 注册
 func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*domain.User, error) {
-	user, _ := s.uRepo.FindByMobile(ctx, param.Mobile)
+	//user, _ := s.uRepo.FindByMobile(ctx, param.Mobile)
+	user, _ := s.uRepo.FindByEmail(ctx, param.Email)
 	if user != nil {
 		return nil, cErr.BadRequest("手机号码已存在")
 	}
 
+	// 创建用户
 	u, err := s.uRepo.Create(ctx, &domain.User{
-		Name:     param.Name,
-		Mobile:   param.Mobile,
+		Name: param.Name,
+		//Mobile:   param.Mobile,
 		Password: hash.BcryptMake([]byte(param.Password)),
+		Email:    param.Email,
 	})
 	if err != nil {
 		return nil, cErr.BadRequest("注册用户失败")
