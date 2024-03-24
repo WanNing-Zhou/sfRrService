@@ -25,6 +25,7 @@ func (r *userRepo) FindByID(ctx context.Context, id uint64) (*domain.User, error
 	if err := r.data.db.First(&user, id).Error; err != nil {
 		return nil, err
 	}
+	//fmt.Println('')
 	return user.ToDomain(), nil
 }
 

@@ -19,6 +19,7 @@ func (m *User) ToDomain() *domain.User {
 		ID:        m.ID,
 		Name:      m.Name,
 		Mobile:    m.Mobile,
+		Email:     m.Email,
 		Password:  m.Password,
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,

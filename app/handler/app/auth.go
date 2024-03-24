@@ -72,6 +72,8 @@ func (h *AuthHandler) Info(c *gin.Context) {
 		response.FailByErr(c, err)
 		return
 	}
+	//delete(user, 'Passwrod')
+	user.Password = ""
 	response.Success(c, user)
 }
 
