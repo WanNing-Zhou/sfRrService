@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jassue/gin-wire/app/domain"
 	"github.com/jassue/gin-wire/app/model"
+	"github.com/jassue/gin-wire/app/pkg/request"
 	"github.com/jassue/gin-wire/app/service"
 	"go.uber.org/zap"
 )
@@ -11,6 +12,28 @@ import (
 type userRepo struct {
 	data *Data
 	log  *zap.Logger
+}
+type userError struct {
+	err string
+}
+
+func (r *userRepo) UpdatePassword(ctx context.Context, params *request.Password) (*domain.User, error) {
+	var user model.User
+
+	user.ID = params.ID
+	user.Password = params.NewPassword
+
+	if err := r.data.DB(ctx).Updates(&user).Error; err != nil {
+		return nil, err
+	}
+
+	//fmt.Print("user2", user)
+
+	return &domain.User{
+		ID:   user.ID,
+		Name: user.Name,
+		Auth: user.Auth,
+	}, nil
 }
 
 func NewUserRepo(data *Data, log *zap.Logger) service.UserRepo {
@@ -83,7 +106,6 @@ func (r *userRepo) Update(ctx context.Context, u *domain.User) (*domain.User, er
 	if err := r.data.DB(ctx).Omit("password", "email").Updates(&user).Error; err != nil {
 		return nil, err
 	}
-
 	return user.ToDomain(), nil
 }
 

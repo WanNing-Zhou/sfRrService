@@ -14,9 +14,9 @@ type UserRepo interface {
 	FindByID(context.Context, uint64) (*domain.User, error)
 	FindByMobile(context.Context, string) (*domain.User, error)
 	Create(context.Context, *domain.User) (*domain.User, error)
-	FindByEmail(context.Context, string) (*domain.User, error)  // 根据Email寻找用户
-	Update(context.Context, *domain.User) (*domain.User, error) // 更新用户信息
-
+	FindByEmail(context.Context, string) (*domain.User, error)               // 根据Email寻找用户
+	Update(context.Context, *domain.User) (*domain.User, error)              // 更新用户信息
+	UpdatePassword(context.Context, *request.Password) (*domain.User, error) // 设置密码
 }
 
 type UserService struct {
@@ -67,6 +67,23 @@ func (s *UserService) SetInfo(ctx *gin.Context, param *request.Info) (*domain.Us
 	}
 
 	return u, nil
+}
+
+func (s *UserService) SetPassword(ctx *gin.Context, param *request.Password) (*domain.User, error) {
+	u, err := s.uRepo.FindByID(ctx, param.ID)
+
+	if err != nil || !hash.BcryptMakeCheck([]byte(param.OldPassword), u.Password) {
+		return nil, cErr.BadRequest("旧密码错误")
+	}
+
+	nu, err := s.uRepo.UpdatePassword(ctx, &request.Password{
+		ID:          param.ID,
+		NewPassword: hash.BcryptMake([]byte(param.NewPassword)),
+	})
+	if err != nil {
+		return nil, cErr.BadRequest("设置用户密码失败")
+	}
+	return nu, nil
 }
 
 // Login 登录

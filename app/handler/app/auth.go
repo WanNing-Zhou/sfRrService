@@ -105,5 +105,36 @@ func (h AuthHandler) SetInfo(c *gin.Context) {
 }
 
 func (h AuthHandler) SetPassword(c *gin.Context) {
+	var form request.Password
+	// 表单校验
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
 
+	u, err := h.userS.SetPassword(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	// 密码设置成功后将原有的token加入黑名单
+	blErr := h.jwtS.JoinBlackList(c, c.Keys["token"].(*jwt.Token))
+	if blErr != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	// 设置新token
+	tokenData, _, jwtErr := h.jwtS.CreateToken(domain.AppGuardName, u)
+
+	if jwtErr != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, tokenData)
+
+	//response.Success(c, u)
 }

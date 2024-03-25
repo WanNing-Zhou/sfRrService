@@ -26,7 +26,7 @@ func (u *User) GetUid() string {
 }
 
 // GetAuth 获取用户权限
+
 func (u *User) GetAuth() string {
 	return strconv.Itoa(u.Auth)
-
 }

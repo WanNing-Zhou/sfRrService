@@ -56,3 +56,18 @@ func (setInfo Info) GetMessages() ValidatorMessages {
 		"Email.required": "邮箱不能为空",
 	}
 }
+
+// Password 用户密码
+type Password struct {
+	ID          uint64 `form:"id" json:"id,string" binding:"required"`
+	OldPassword string `form:"oldPassword" json:"oldPassword" binding:"required"` // id
+	NewPassword string `form:"newPassword" json:"newPassword" binding:"required"`
+}
+
+func (setInfo Password) GetMessages() ValidatorMessages {
+	return ValidatorMessages{
+		"ID.required":          "用户ID不能为空",
+		"OldPassword.required": "旧密码不能为空",
+		"NewPassword.required": "新密码不能为空",
+	}
+}

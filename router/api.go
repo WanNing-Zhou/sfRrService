@@ -26,7 +26,7 @@ func setApiGroupRoutes(
 		authGroup.POST("/auth/logout", authH.Logout)
 		authGroup.POST("/image_upload", commonH.ImageUpload)
 		authGroup.POST("/auth/info", authH.SetInfo)
-		//authGroup.POST("/auth/password", authH.SetPassword)
+		authGroup.POST("/auth/password", authH.SetPassword)
 	}
 
 	return group

@@ -66,3 +66,6 @@ queue:
     uri: 'amqp://user:root@localhost:5672/'
     exchange_name: 'example'
     delay_exchange_name: 'example-delay'
+
+md5:
+  salt: 'salt'
