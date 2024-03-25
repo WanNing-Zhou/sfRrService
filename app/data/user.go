@@ -66,3 +66,30 @@ func (r *userRepo) Create(ctx context.Context, u *domain.User) (*domain.User, er
 
 	return user.ToDomain(), nil
 }
+
+func (r *userRepo) Update(ctx context.Context, u *domain.User) (*domain.User, error) {
+	var user model.User
+	//id, err := r.data.sf.NextID()
+	//if err != nil { return nil, err}
+	//user.Password = u.Password
+	user.Email = u.Email
+	user.Mobile = u.Mobile
+	user.Name = u.Name
+	user.ID = u.ID
+	user.Avatar = u.Avatar
+	user.Introduction = u.Introduction
+
+	// 忽略password, email 进行更新
+	if err := r.data.DB(ctx).Omit("password", "email").Updates(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return user.ToDomain(), nil
+}
+
+// ReSetInfo 重设置密码
+func (r *userRepo) ReSetInfo(ctx context.Context, u *domain.User) (*domain.User, error) {
+	var user model.User
+	// :TODO to implement
+	return user.ToDomain(), nil
+}

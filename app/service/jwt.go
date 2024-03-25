@@ -41,7 +41,8 @@ func (s *JwtService) CreateToken(GuardName string, user domain.JwtUser) (*domain
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		domain.CustomClaims{
-			Key: GuardName,
+			Key:  GuardName,
+			Auth: user.GetAuth(),
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(s.conf.Jwt.JwtTtl))),
 				NotBefore: jwt.NewNumericDate(time.Now().Add(time.Second * -1000)),

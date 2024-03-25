@@ -14,7 +14,9 @@ type UserRepo interface {
 	FindByID(context.Context, uint64) (*domain.User, error)
 	FindByMobile(context.Context, string) (*domain.User, error)
 	Create(context.Context, *domain.User) (*domain.User, error)
-	FindByEmail(context.Context, string) (*domain.User, error) // 根据Email寻找用户
+	FindByEmail(context.Context, string) (*domain.User, error)  // 根据Email寻找用户
+	Update(context.Context, *domain.User) (*domain.User, error) // 更新用户信息
+
 }
 
 type UserService struct {
@@ -49,6 +51,24 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
 	return u, nil
 }
 
+// SetInfo 设置用户信息
+func (s *UserService) SetInfo(ctx *gin.Context, param *request.Info) (*domain.User, error) {
+
+	u, err := s.uRepo.Update(ctx, &domain.User{
+		Name:         param.Name,
+		Mobile:       param.Mobile,
+		ID:           param.ID,
+		Email:        param.Email,
+		Avatar:       param.Avatar,
+		Introduction: param.Introduction,
+	})
+	if err != nil {
+		return nil, cErr.BadRequest("设置用户信息失败")
+	}
+
+	return u, nil
+}
+
 // Login 登录
 func (s *UserService) Login(ctx *gin.Context, email, password string) (*domain.User, error) {
 	//u, err := s.uRepo.FindByMobile(ctx, mobile)
@@ -71,6 +91,6 @@ func (s *UserService) GetUserInfo(ctx *gin.Context, idStr string) (*domain.User,
 	if err != nil {
 		return nil, cErr.NotFound("数据不存在", cErr.USER_NOT_FOUND)
 	}
-
+	//fmt.Print(u)
 	return u, nil
 }

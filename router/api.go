@@ -22,9 +22,11 @@ func setApiGroupRoutes(
 	// 权限校验
 	authGroup := group.Group("").Use(jwtAuthM.Handler(domain.AppGuardName))
 	{
-		authGroup.POST("/auth/info", authH.Info)
+		authGroup.GET("/auth/info", authH.Info)
 		authGroup.POST("/auth/logout", authH.Logout)
 		authGroup.POST("/image_upload", commonH.ImageUpload)
+		authGroup.POST("/auth/info", authH.SetInfo)
+		//authGroup.POST("/auth/password", authH.SetPassword)
 	}
 
 	return group

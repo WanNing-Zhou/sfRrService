@@ -86,3 +86,24 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 
 	response.Success(c, nil)
 }
+
+func (h AuthHandler) SetInfo(c *gin.Context) {
+	var form request.Info
+	// 表单校验
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	u, err := h.userS.SetInfo(c, &form)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, u)
+}
+
+func (h AuthHandler) SetPassword(c *gin.Context) {
+
+}
