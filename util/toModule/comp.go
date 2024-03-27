@@ -15,4 +15,6 @@ func CompDoMainToModule(m *model.Comp, d *domain.Comp) {
 	m.Url = d.Url
 	m.PreviewUrl = d.PreviewUrl
 	m.ID = d.ID
+	m.Row = d.Row
+	m.Column = d.Column
 }

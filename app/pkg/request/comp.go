@@ -10,6 +10,8 @@ type NewComp struct {
 	Types      int    `form:"types" json:"types,string"`
 	PreviewUrl string `form:"previewUrl" json:"previewUrl" binding:"required"`
 	Url        string `form:"url" json:"url" binding:"required"`
+	Row        int    `form:"row" json:"row" binding:"required"`
+	Column     int    `form:"column" json:"column" binding:"required"`
 }
 
 func (newComp NewComp) GetMessages() ValidatorMessages {
@@ -18,5 +20,7 @@ func (newComp NewComp) GetMessages() ValidatorMessages {
 		"Deploy.required":     "组件部署方式不能为空",
 		"PreviewUrl.required": "组件预览地址不能为空",
 		"Url.required":        "组件访问地址不能为空",
+		"Column.required":     "默认列数不能为空",
+		"Row.required":        "默认行数不能为空",
 	}
 }

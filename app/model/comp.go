@@ -14,6 +14,8 @@ type Comp struct {
 	Url        string `gorm:"Size:100;comment:访问地址"`
 	PreviewUrl string `gorm:"Size:100;comment:预览地址"`
 	Types      int    `gorm:"comment:组件类型"`
+	Row        int    `gorm:"comment:默认占行数"`
+	Column     int    `gorm:"comment:默认占列数"`
 	Timestamps
 }
 
@@ -31,5 +33,7 @@ func (c *Comp) ToDomain() *domain.Comp {
 		Url:        c.Url,
 		PreviewUrl: c.PreviewUrl,
 		Types:      c.Types,
+		Row:        c.Row,
+		Column:     c.Column,
 	}
 }

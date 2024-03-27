@@ -30,9 +30,10 @@ func setApiGroupRoutes(
 		authGroup.POST("/auth/password", authH.SetPassword)
 	}
 
-	compGroup := group.Group("/comp").Use(jwtAuthM.Handler(domain.AppGuardName))
+	// 需要开发者以上权限
+	compGroup := group.Group("/comp").Use(jwtAuthM.Handler(domain.AppGuardName)).Use(jwtAuthM.AuthDevHandle(domain.AppGuardName))
 	{
-		compGroup.POST("", compH.NewComp)
+		compGroup.POST("/create", compH.NewComp)
 	}
 
 	return group

@@ -70,5 +70,19 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
 
 		c.Set("token", token)
 		c.Set("id", claims.ID)
+		c.Set("auth", claims.Auth)
 	}
+}
+
+func (m *JWTAuth) AuthDevHandle(guardName string) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		auth, err := strconv.Atoi(c.Keys["auth"].(string))
+		if auth > 2 || err != nil {
+			response.FailByErr(c, cErr.Forbidden("权限不足"))
+			return
+		}
+
+	}
+
 }

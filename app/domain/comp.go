@@ -17,6 +17,8 @@ type Comp struct {
 	Types      int       `json:"types"`
 	PreviewUrl string    `json:"preview_url"`
 	Url        string    `json:"url"`
+	Row        int       `json:"row"`
+	Column     int       `json:"column"`
 }
 
 // 获取组件id

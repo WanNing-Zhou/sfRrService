@@ -35,6 +35,8 @@ func (s *CompService) Create(ctx context.Context, param *request.NewComp) (*doma
 		PreviewUrl: param.PreviewUrl,
 		Url:        param.Url,
 		CreateId:   param.CreateId,
+		Row:        param.Row,
+		Column:     param.Column,
 	})
 	if err != nil {
 		return nil, cErr.BadRequest("创建失败")
