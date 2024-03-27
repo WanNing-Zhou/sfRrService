@@ -6,13 +6,17 @@ import (
 )
 
 type Comp struct {
-	ID       uint64    `json:"id"` // 主键
-	Name     string    `json:"name"`
-	Info     string    `json:"info"`
-	CreatId  uint64    `json:"creat_id"`
-	CreateAt time.Time `json:"create_at"`
-	UpdateAt time.Time `json:"UpdateAt"`
-	IsList   int       `json:"IsList"`
+	ID         uint64    `json:"id,string"` // 主键
+	Title      string    `json:"title"`
+	Info       string    `json:"info"`
+	CreateId   uint64    `json:"create_id,string"`
+	CreatedAt  time.Time `json:"create_at"`
+	UpdatedAt  time.Time `json:"UpdateAt"`
+	IsList     int       `json:"IsList"`
+	Deploy     string    `json:"deploy"`
+	Types      int       `json:"types"`
+	PreviewUrl string    `json:"preview_url"`
+	Url        string    `json:"url"`
 }
 
 // 获取组件id

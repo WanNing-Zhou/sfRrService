@@ -5,6 +5,7 @@ import (
 	"github.com/jassue/gin-wire/app/domain"
 	"github.com/jassue/gin-wire/app/model"
 	"github.com/jassue/gin-wire/app/service"
+	"github.com/jassue/gin-wire/util/toModule"
 	"go.uber.org/zap"
 )
 
@@ -40,8 +41,7 @@ func (r *compRepo) FindByCreateId(ctx context.Context, creatId uint64) (*domain.
 	return comp.ToDomain(), nil
 }
 
-// 创建comp
-
+// Create 床架comp
 func (r *compRepo) Create(ctx context.Context, c *domain.Comp) (*domain.Comp, error) {
 	var comp model.Comp
 
@@ -49,11 +49,8 @@ func (r *compRepo) Create(ctx context.Context, c *domain.Comp) (*domain.Comp, er
 	if err != nil {
 		return nil, err
 	}
+	toModule.CompDoMainToModule(&comp, c)
 	comp.ID = id
-	comp.Name = c.Name
-	comp.Info = c.Info
-	comp.IsList = 0
-
 	if err = r.data.DB(ctx).Create(&comp).Error; err != nil {
 		return nil, err
 	}

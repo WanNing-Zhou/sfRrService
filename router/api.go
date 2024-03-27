@@ -15,6 +15,7 @@ func setApiGroupRoutes(
 	jwtAuthM *middleware.JWTAuth,
 	authH *app.AuthHandler,
 	commonH *common.UploadHandler,
+	compH *app.CompHandler,
 ) *gin.RouterGroup {
 	group := router.Group("/api")
 	group.POST("/auth/register", authH.Register)
@@ -27,6 +28,11 @@ func setApiGroupRoutes(
 		authGroup.POST("/image_upload", commonH.ImageUpload)
 		authGroup.POST("/auth/info", authH.SetInfo)
 		authGroup.POST("/auth/password", authH.SetPassword)
+	}
+
+	compGroup := group.Group("/comp").Use(jwtAuthM.Handler(domain.AppGuardName))
+	{
+		compGroup.POST("", compH.NewComp)
 	}
 
 	return group
