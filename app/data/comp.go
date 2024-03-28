@@ -71,7 +71,7 @@ func (r *compRepo) FindCompsByQuery(ctx context.Context, param *request.CompList
 		query = query.Where("title LIKE ?", "%"+param.Name+"%")
 	}
 	if param.CreateId != 0 {
-		query = query.Where("creat_id = ?", param.CreateId)
+		query = query.Where("create_id = ?", param.CreateId)
 	}
 	if param.ID != 0 {
 		query = query.Where("id = ?", param.ID)

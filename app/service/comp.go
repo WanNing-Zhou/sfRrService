@@ -54,3 +54,11 @@ func (s *CompService) GetComps(ctx context.Context, param *request.CompList) ([]
 
 	return compList, total, nil
 }
+
+func (s *CompService) GetCompById(ctx context.Context, id uint64) (*domain.Comp, error) {
+	comp, err := s.cRepo.FindByID(ctx, id)
+	if err != nil {
+		return nil, cErr.BadRequest("查询失败")
+	}
+	return comp, nil
+}

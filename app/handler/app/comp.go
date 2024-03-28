@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/jassue/gin-wire/app/pkg/request"
 	"github.com/jassue/gin-wire/app/pkg/resp"
@@ -64,5 +65,24 @@ func (h *CompHandler) GetCompList(c *gin.Context) {
 	}
 
 	response.Success(c, &resp.RespList{List: compList, Total: total})
+}
+
+func (h *CompHandler) GetCompInfo(c *gin.Context) {
+
+	compId := c.Query("id")
+	if compId == "" {
+		response.FailByErr(c, errors.New("id不能为空"))
+		return
+	}
+
+	id, _ := strconv.ParseUint(compId, 10, 64)
+
+	comp, err := h.compS.GetCompById(c, id)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, comp)
 
 }

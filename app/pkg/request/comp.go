@@ -27,7 +27,7 @@ func (newComp NewComp) GetMessages() ValidatorMessages {
 
 // CompList 获取组件列表结构
 type CompList struct {
-	Name     string `form:"title" json:"title"`
+	Name     string `form:"name" json:"name"`
 	CreateId uint   `form:"createId,string" json:"createId,string"`
 	ID       uint   `form:"id,string" json:"id,string"`
 	PageDto
