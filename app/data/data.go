@@ -10,6 +10,8 @@ import (
 	"github.com/jassue/gin-wire/config"
 	"github.com/jassue/gin-wire/util/path"
 	"github.com/sony/sonyflake"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gorm.io/driver/mysql"
@@ -27,7 +29,7 @@ import (
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData, NewDB, NewRedis, NewTransaction,
-	NewUserRepo, NewJwtRepo, NewMediaRepo,
+	NewUserRepo, NewJwtRepo, NewMediaRepo, NewMongoDB,
 )
 
 // Data .
@@ -144,6 +146,25 @@ func NewRedis(c *config.Configuration, gLog *zap.Logger) *redis.Client {
 	}
 
 	return client
+}
+
+func NewMongoDB(conf *config.Configuration, gLog *zap.Logger) *mongo.Client {
+	//dsn := "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf("%s://%s:%s",
+		conf.MongoDB.Driver,
+		conf.MongoDB.Host,
+		&conf.MongoDB.Port,
+	)
+
+	//1.建立连接
+	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dsn).SetConnectTimeout(5*time.Second))
+
+	if err != nil {
+		//fmt.Print(err)
+		gLog.Error("mongo connect failed, err:", zap.Any("err", err))
+		panic("failed to connect mongo")
+	}
+	return mongoClient
 }
 
 type contextTxKey struct{}

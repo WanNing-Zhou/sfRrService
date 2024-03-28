@@ -67,5 +67,10 @@ queue:
     exchange_name: 'example'
     delay_exchange_name: 'example-delay'
 
+mongodb:
+  driver: 'mongodb'
+  host: '127.0.0.1'
+  port: '27017'
+
 md5:
   salt: 'salt'
