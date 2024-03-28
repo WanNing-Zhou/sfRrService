@@ -24,3 +24,11 @@ func (newComp NewComp) GetMessages() ValidatorMessages {
 		"Row.required":        "默认行数不能为空",
 	}
 }
+
+// CompList 获取组件列表结构
+type CompList struct {
+	Name     string `form:"title" json:"title"`
+	CreateId uint   `form:"createId,string" json:"createId,string"`
+	ID       uint   `form:"id,string" json:"id,string"`
+	PageDto
+}

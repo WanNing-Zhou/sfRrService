@@ -11,6 +11,7 @@ type CompRepo interface {
 	FindByID(context.Context, uint64) (*domain.Comp, error)
 	FindByCreateId(context.Context, uint64) (*domain.Comp, error) // 根据创建人ID查找
 	Create(context.Context, *domain.Comp) (*domain.Comp, error)   // 创建
+	FindCompsByQuery(context.Context, *request.CompList) ([]domain.Comp, int64, error)
 }
 
 type CompService struct {
@@ -43,4 +44,13 @@ func (s *CompService) Create(ctx context.Context, param *request.NewComp) (*doma
 	}
 
 	return u, nil
+}
+
+func (s *CompService) GetComps(ctx context.Context, param *request.CompList) ([]domain.Comp, int64, error) {
+	compList, total, err := s.cRepo.FindCompsByQuery(ctx, param)
+	if err != nil {
+		return nil, 0, cErr.BadRequest("查询失败")
+	}
+
+	return compList, total, nil
 }

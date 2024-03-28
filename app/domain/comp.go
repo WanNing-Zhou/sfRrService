@@ -10,9 +10,9 @@ type Comp struct {
 	Title      string    `json:"title"`
 	Info       string    `json:"info"`
 	CreateId   uint64    `json:"create_id,string"`
-	CreatedAt  time.Time `json:"create_at"`
-	UpdatedAt  time.Time `json:"UpdateAt"`
-	IsList     int       `json:"IsList"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	IsList     int       `json:"is_list"`
 	Deploy     string    `json:"deploy"`
 	Types      int       `json:"types"`
 	PreviewUrl string    `json:"preview_url"`

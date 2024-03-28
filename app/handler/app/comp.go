@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jassue/gin-wire/app/pkg/request"
+	"github.com/jassue/gin-wire/app/pkg/resp"
 	"github.com/jassue/gin-wire/app/pkg/response"
 	"github.com/jassue/gin-wire/app/service"
 	"go.uber.org/zap"
@@ -45,4 +46,23 @@ func (h *CompHandler) NewComp(c *gin.Context) {
 	}
 
 	response.Success(c, comp)
+}
+
+func (h *CompHandler) GetCompList(c *gin.Context) {
+	var form request.CompList
+
+	if err := c.ShouldBindQuery(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	compList, total, err := h.compS.GetComps(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, &resp.RespList{List: compList, Total: total})
+
 }

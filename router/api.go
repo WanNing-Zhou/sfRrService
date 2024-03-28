@@ -34,6 +34,7 @@ func setApiGroupRoutes(
 	compGroup := group.Group("/comp").Use(jwtAuthM.Handler(domain.AppGuardName)).Use(jwtAuthM.AuthDevHandle(domain.AppGuardName))
 	{
 		compGroup.POST("/create", compH.NewComp)
+		compGroup.GET("/list", compH.GetCompList)
 	}
 
 	return group
