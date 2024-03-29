@@ -12,6 +12,7 @@ type CompRepo interface {
 	FindByCreateId(context.Context, uint64) (*domain.Comp, error) // 根据创建人ID查找
 	Create(context.Context, *domain.Comp) (*domain.Comp, error)   // 创建
 	FindCompsByQuery(context.Context, *request.CompList) ([]domain.Comp, int64, error)
+	UpdateComp(ctx context.Context, comp *domain.Comp) (*domain.Comp, error)
 }
 
 type CompService struct {
@@ -29,10 +30,10 @@ func NewCompService(cRepo CompRepo, tm Transaction) *CompService {
 func (s *CompService) Create(ctx context.Context, param *request.NewComp) (*domain.Comp, error) {
 
 	u, err := s.cRepo.Create(ctx, &domain.Comp{
-		Title:      param.Title,
-		Info:       param.Info,
-		Deploy:     param.Deploy,
-		Types:      param.Types,
+		Title:  param.Title,
+		Info:   param.Info,
+		Deploy: param.Deploy,
+		//Types:      param.Types,
 		PreviewUrl: param.PreviewUrl,
 		Url:        param.Url,
 		CreateId:   param.CreateId,
@@ -61,4 +62,22 @@ func (s *CompService) GetCompById(ctx context.Context, id uint64) (*domain.Comp,
 		return nil, cErr.BadRequest("查询失败")
 	}
 	return comp, nil
+}
+
+func (s *CompService) UpdateComp(ctx context.Context, param *request.UpdateCompInfo) (*domain.Comp, error) {
+	var comp domain.Comp
+	comp.ID = param.ID
+	comp.Row = param.Row
+	comp.Column = param.Column
+	comp.Url = param.Url
+	comp.PreviewUrl = param.PreviewUrl
+	comp.Deploy = param.Deploy
+	comp.Info = param.Info
+	comp.Title = param.Title
+	resC, err := s.cRepo.UpdateComp(ctx, &comp)
+	if err != nil {
+		return nil, err
+	}
+
+	return resC, nil
 }

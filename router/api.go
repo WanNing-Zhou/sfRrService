@@ -36,6 +36,7 @@ func setApiGroupRoutes(
 		compGroup.POST("/create", compH.NewComp)
 		compGroup.GET("/list", compH.GetCompList)
 		compGroup.GET("/info", compH.GetCompInfo)
+		compGroup.POST("/update", compH.UpdateCompInfo)
 	}
 
 	return group

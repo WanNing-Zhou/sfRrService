@@ -86,3 +86,22 @@ func (h *CompHandler) GetCompInfo(c *gin.Context) {
 	response.Success(c, comp)
 
 }
+
+func (h *CompHandler) UpdateCompInfo(c *gin.Context) {
+	var form request.UpdateCompInfo
+
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	comp, err := h.compS.UpdateComp(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, comp)
+
+}
