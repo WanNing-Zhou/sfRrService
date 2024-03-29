@@ -105,3 +105,12 @@ func (h *CompHandler) UpdateCompInfo(c *gin.Context) {
 	response.Success(c, comp)
 
 }
+
+func (h *CompHandler) AuditComp(c *gin.Context) {
+	var form request.AuditComp
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+}

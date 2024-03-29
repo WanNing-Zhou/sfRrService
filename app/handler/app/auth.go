@@ -138,3 +138,26 @@ func (h AuthHandler) SetPassword(c *gin.Context) {
 
 	//response.Success(c, u)
 }
+
+// SLogin 管理员登陆
+func (h AuthHandler) SLogin(c *gin.Context) {
+	var form request.Login
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	user, err := h.userS.SLogin(c, form.Email, form.Password)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	tokenData, _, err := h.jwtS.CreateToken(domain.AppGuardName, user)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, tokenData)
+}

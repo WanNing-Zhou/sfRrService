@@ -39,5 +39,21 @@ func setApiGroupRoutes(
 		compGroup.POST("/update", compH.UpdateCompInfo)
 	}
 
+	// 管理员登陆
+	group.POST("/sAuth/login", authH.SLogin)
+
+	// 需要管理员权限
+	sAuthGroup := group.Group("/sAuth").Use(jwtAuthM.Handler(domain.AppGuardName)).Use(jwtAuthM.AuthSuperHandle(domain.AppGuardName))
+	{
+		// 获取用户列表
+		sAuthGroup.GET("/user/list")
+		// 创建管理员账号
+		sAuthGroup.POST("/sUser/create")
+		// 组件审核
+		sAuthGroup.POST("/comp/audit")
+		// 组件删除
+		sAuthGroup.POST("/comp/delete")
+	}
+
 	return group
 }

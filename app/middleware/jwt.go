@@ -86,3 +86,15 @@ func (m *JWTAuth) AuthDevHandle(guardName string) gin.HandlerFunc {
 	}
 
 }
+
+// AuthSuperHandle  验证管理权限
+func (m *JWTAuth) AuthSuperHandle(groundName string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth, err := strconv.Atoi(c.Keys["auth"].(string))
+		if auth > 1 || err != nil {
+			response.FailByErr(c, cErr.Forbidden("权限不足"))
+			return
+		}
+
+	}
+}

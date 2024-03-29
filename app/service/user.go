@@ -111,3 +111,17 @@ func (s *UserService) GetUserInfo(ctx *gin.Context, idStr string) (*domain.User,
 	//fmt.Print(u)
 	return u, nil
 }
+
+// SLogin 管理员登陆
+func (s *UserService) SLogin(ctx *gin.Context, email, password string) (*domain.User, error) {
+	//u, err := s.uRepo.FindByMobile(ctx, mobile)
+	// 根据邮箱查找账户
+	u, err := s.uRepo.FindByEmail(ctx, email)
+	if err != nil || !hash.BcryptMakeCheck([]byte(password), u.Password) {
+		return nil, cErr.BadRequest("用户名不存在或密码错误")
+	}
+	if u.Auth > 0 {
+		return nil, cErr.BadRequest("该用户无管理员权限")
+	}
+	return u, nil
+}
