@@ -12,9 +12,10 @@ import (
 )
 
 type CompHandler struct {
-	log   *zap.Logger
-	jwtS  *service.JwtService
-	compS *service.CompService
+	log    *zap.Logger
+	jwtS   *service.JwtService
+	compS  *service.CompService
+	cAMsgS *service.CAMsgService
 }
 
 // NewCompHandler  创建CompHandler实例
@@ -112,5 +113,21 @@ func (h *CompHandler) AuditComp(c *gin.Context) {
 		response.FailByErr(c, request.GetError(form, err))
 		return
 	}
+
+	msg, err := h.compS.AuditComp(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	//msg, err := h.cAMsgS.NewMsg(c, &domain.CompAuditMsg{
+	//	CompId:   form.ID,
+	//	CreateId: form.CreateId,
+	//	Msg:      form.Msg,
+	//	IsList:   form.IsList,
+	//})
+
+	response.Success(c, msg)
 
 }

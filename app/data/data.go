@@ -30,6 +30,7 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData, NewDB, NewRedis, NewTransaction,
 	NewUserRepo, NewJwtRepo, NewMediaRepo, NewMongoDB,
+	NewCompRepo, NewCAMsgRepo,
 )
 
 // Data .

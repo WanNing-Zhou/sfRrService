@@ -108,6 +108,16 @@ func (r *compRepo) FindCompsByQuery(ctx context.Context, param *request.CompList
 func (r *compRepo) UpdateComp(ctx context.Context, c *domain.Comp) (*domain.Comp, error) {
 	var comp model.Comp
 	toModule.CompDoMainToModule(&comp, c)
+	comp.IsList = 0
+	if err := r.data.DB(ctx).Model(&comp).Where("id = ?", c.ID).Updates(comp).Error; err != nil {
+		return nil, err
+	}
+	return comp.ToDomain(), nil
+}
+
+func (r *compRepo) UpdateIsList(ctx context.Context, c *domain.Comp) (*domain.Comp, error) {
+	var comp model.Comp
+	toModule.CompDoMainToModule(&comp, c)
 	if err := r.data.DB(ctx).Model(&comp).Where("id = ?", c.ID).Updates(comp).Error; err != nil {
 		return nil, err
 	}

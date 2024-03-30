@@ -60,15 +60,15 @@ func (updateCompInfo UpdateCompInfo) GetMessages() ValidatorMessages {
 type AuditComp struct {
 	ID       uint64 `form:"id" json:"id,string"`               // 组件
 	IsList   int    `form:"is_list" json:"is_list"`            // 审核状态
-	Message  string `form:"message" json:"message"`            // 审核意见
+	Msg      string `form:"msg" json:"msg"`                    // 审核意见
 	CreateId uint64 `form:"create_id" json:"create_id,string"` // 审核人id
 }
 
 func (auditComp AuditComp) GetMessages() ValidatorMessages {
 	return ValidatorMessages{
-		"ID.required":     "组件id不能为空",
-		"IsList.required": "审核状态不能为空",
-		//"Message.required": "审核意见不能为空",
-		//"CreateId.required": "审核人id不能为空",
+		"ID.required":       "组件id不能为空",
+		"IsList.required":   "审核状态不能为空",
+		"Msg.required":      "审核意见不能为空",
+		"CreateId.required": "审核人id不能为空",
 	}
 }

@@ -13,9 +13,6 @@ type userRepo struct {
 	data *Data
 	log  *zap.Logger
 }
-type userError struct {
-	err string
-}
 
 func (r *userRepo) UpdatePassword(ctx context.Context, params *request.Password) (*domain.User, error) {
 	var user model.User

@@ -50,7 +50,7 @@ func setApiGroupRoutes(
 		// 创建管理员账号
 		sAuthGroup.POST("/sUser/create")
 		// 组件审核
-		sAuthGroup.POST("/comp/audit")
+		sAuthGroup.POST("/comp/audit", compH.AuditComp)
 		// 组件删除
 		sAuthGroup.POST("/comp/delete")
 	}

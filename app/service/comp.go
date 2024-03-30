@@ -13,17 +13,20 @@ type CompRepo interface {
 	Create(context.Context, *domain.Comp) (*domain.Comp, error)   // 创建
 	FindCompsByQuery(context.Context, *request.CompList) ([]domain.Comp, int64, error)
 	UpdateComp(ctx context.Context, comp *domain.Comp) (*domain.Comp, error)
+	UpdateIsList(ctx context.Context, c *domain.Comp) (*domain.Comp, error)
 }
 
 type CompService struct {
 	cRepo CompRepo
 	tm    Transaction
+	cAM   CAMsgRepo
 }
 
-func NewCompService(cRepo CompRepo, tm Transaction) *CompService {
+func NewCompService(cRepo CompRepo, tm Transaction, cAMRepo CAMsgRepo) *CompService {
 	return &CompService{
 		cRepo: cRepo,
 		tm:    tm,
+		cAM:   cAMRepo,
 	}
 }
 
@@ -80,4 +83,27 @@ func (s *CompService) UpdateComp(ctx context.Context, param *request.UpdateCompI
 	}
 
 	return resC, nil
+}
+
+func (s *CompService) AuditComp(ctx context.Context, param *request.AuditComp) (*domain.CompAuditMsg, error) {
+	var comp domain.Comp
+	comp.ID = param.ID
+	comp.IsList = param.IsList
+	_, err := s.cRepo.UpdateIsList(ctx, &comp)
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := s.cAM.Create(ctx, &domain.CompAuditMsg{
+		CompId:   param.ID,
+		CreateId: param.CreateId,
+		Msg:      param.Msg,
+		IsList:   param.IsList,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
