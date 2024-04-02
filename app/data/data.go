@@ -195,18 +195,6 @@ func NewMongoDB(conf *config.Configuration, gLog *zap.Logger) *mongo.Database {
 
 	//1.建立连接
 	mongoClient, err := mongo.Connect(ctx, clientOpt)
-	if nil != err {
-		fmt.Printf("mongo connect err %v\n", err)
-	} else {
-		//fmt.Printf("mongo connect success~\n")
-		zapLogger.Info("mongo connect success~")
-		defer func() {
-			if err = mongoClient.Disconnect(ctx); err != nil {
-				panic(err)
-			}
-		}()
-	}
-
 	//mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dsn).SetConnectTimeout(10*time.Second))
 	database := mongoClient.Database(conf.MongoDB.Database)
 	if err != nil {
@@ -219,6 +207,8 @@ func NewMongoDB(conf *config.Configuration, gLog *zap.Logger) *mongo.Database {
 		gLog.Error("mongo connect failed, err:", zap.Any("err", err))
 		panic("failed to connect mongo")
 	}
+	zapLogger.Info("mongo connect success~")
+
 	return database
 }
 

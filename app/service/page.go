@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/jassue/gin-wire/app/domain"
 	cErr "github.com/jassue/gin-wire/app/pkg/error"
 	"github.com/jassue/gin-wire/app/pkg/request"
@@ -38,6 +39,8 @@ func (s *PageService) Create(ctx context.Context, param *request.NewPage) (*doma
 		CreateId: param.CreateId,
 		Data:     param.Data,
 	})
+	fmt.Println("执行了")
+	fmt.Println(err)
 	if err != nil {
 		return nil, cErr.BadRequest("创建失败")
 	}

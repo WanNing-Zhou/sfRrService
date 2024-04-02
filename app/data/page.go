@@ -43,6 +43,7 @@ func (p pageRepo) Create(ctx context.Context, comp *domain.Page) (*domain.Page, 
 	}
 
 	fmt.Println(one)
+	fmt.Println("执行了")
 	//collections.Collection("trainers")
 	//TODO implement me
 	panic("implement me")
