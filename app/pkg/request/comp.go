@@ -72,3 +72,18 @@ func (auditComp AuditComp) GetMessages() ValidatorMessages {
 		"CreateId.required": "审核人id不能为空",
 	}
 }
+
+type NewPage struct {
+	CreateId uint64      `form:"create_id" json:"create_id,string"` // 创建人
+	Data     interface{} `form:"data" json:"data"`                  // 页面数据
+	Info     string      `form:"info" json:"info"`                  // 页面信息
+	Title    string      `form:"info" json:"title"`                 // 页面标题
+}
+
+func (newPAge NewPage) GetMessage() ValidatorMessages {
+	return ValidatorMessages{
+		"CreateId.required": "组件id不能为空",
+		"Data.required":     "审核状态不能为空",
+	}
+
+}

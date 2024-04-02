@@ -11,4 +11,5 @@ var ProviderSet = wire.NewSet(
 	app.NewAuthHandler,
 	common.NewUploadHandler,
 	app.NewCompHandler,
+	app.NewPageHandler,
 )

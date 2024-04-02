@@ -16,10 +16,13 @@ func setApiGroupRoutes(
 	authH *app.AuthHandler,
 	commonH *common.UploadHandler,
 	compH *app.CompHandler,
+	pageH *app.PageHandler,
 ) *gin.RouterGroup {
 	group := router.Group("/api")
 	group.POST("/auth/register", authH.Register)
 	group.POST("/auth/login", authH.Login)
+	group.POST("/mdbtest", pageH.NewPage)
+
 	// 权限校验
 	authGroup := group.Group("").Use(jwtAuthM.Handler(domain.AppGuardName))
 	{
@@ -28,6 +31,7 @@ func setApiGroupRoutes(
 		authGroup.POST("/image_upload", commonH.ImageUpload)
 		authGroup.POST("/auth/info", authH.SetInfo)
 		authGroup.POST("/auth/password", authH.SetPassword)
+		authGroup.POST("/page")
 	}
 
 	// 需要开发者以上权限
@@ -46,13 +50,18 @@ func setApiGroupRoutes(
 	sAuthGroup := group.Group("/sAuth").Use(jwtAuthM.Handler(domain.AppGuardName)).Use(jwtAuthM.AuthSuperHandle(domain.AppGuardName))
 	{
 		// 获取用户列表
-		sAuthGroup.GET("/user/list")
+		sAuthGroup.GET("/user/list", authH.GetUserList)
 		// 创建管理员账号
 		sAuthGroup.POST("/sUser/create")
 		// 组件审核
 		sAuthGroup.POST("/comp/audit", compH.AuditComp)
 		// 组件删除
 		sAuthGroup.POST("/comp/delete")
+	}
+
+	csmGroup := group.Group("/csm")
+	{
+		csmGroup.GET("/comp/list", compH.GetCompPassedList)
 	}
 
 	return group

@@ -11,7 +11,7 @@ type CompRepo interface {
 	FindByID(context.Context, uint64) (*domain.Comp, error)
 	FindByCreateId(context.Context, uint64) (*domain.Comp, error) // 根据创建人ID查找
 	Create(context.Context, *domain.Comp) (*domain.Comp, error)   // 创建
-	FindCompsByQuery(context.Context, *request.CompList) ([]domain.Comp, int64, error)
+	FindCompsByQuery(context.Context, *request.CompList, bool) ([]domain.Comp, int64, error)
 	UpdateComp(ctx context.Context, comp *domain.Comp) (*domain.Comp, error)
 	UpdateIsList(ctx context.Context, c *domain.Comp) (*domain.Comp, error)
 }
@@ -51,7 +51,16 @@ func (s *CompService) Create(ctx context.Context, param *request.NewComp) (*doma
 }
 
 func (s *CompService) GetComps(ctx context.Context, param *request.CompList) ([]domain.Comp, int64, error) {
-	compList, total, err := s.cRepo.FindCompsByQuery(ctx, param)
+	compList, total, err := s.cRepo.FindCompsByQuery(ctx, param, false)
+	if err != nil {
+		return nil, 0, cErr.BadRequest("查询失败")
+	}
+
+	return compList, total, nil
+}
+
+func (s *CompService) GetCompsPassed(ctx context.Context, param *request.CompList) ([]domain.Comp, int64, error) {
+	compList, total, err := s.cRepo.FindCompsByQuery(ctx, param, true)
 	if err != nil {
 		return nil, 0, cErr.BadRequest("查询失败")
 	}

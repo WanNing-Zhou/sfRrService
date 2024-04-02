@@ -29,7 +29,8 @@ func wireApp(configuration *config.Configuration, lumberjackLogger *lumberjack.L
 	db := data.NewDB(configuration, zapLogger)
 	client := data.NewRedis(configuration, zapLogger)
 	sonyflake := compo.NewSonyFlake()
-	dataData, cleanup, err := data.NewData(zapLogger, db, client, sonyflake)
+	database := data.NewMongoDB(configuration, zapLogger)
+	dataData, cleanup, err := data.NewData(zapLogger, db, client, sonyflake, database)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -53,7 +54,10 @@ func wireApp(configuration *config.Configuration, lumberjackLogger *lumberjack.L
 	caMsgRepo := data.NewCAMsgRepo(dataData, zapLogger)
 	compService := service.NewCompService(compRepo, transaction, caMsgRepo)
 	compHandler := app.NewCompHandler(zapLogger, jwtService, compService)
-	engine := router.NewRouter(configuration, jwtAuth, recovery, cors, limiter, authHandler, uploadHandler, compHandler)
+	pageRepo := data.NewPageRepo(dataData, zapLogger)
+	pageService := service.NewPageService(pageRepo, transaction, caMsgRepo)
+	pageHandler := app.NewPageHandler(zapLogger, jwtService, pageService)
+	engine := router.NewRouter(configuration, jwtAuth, recovery, cors, limiter, authHandler, uploadHandler, compHandler, pageHandler)
 	server := newHttpServer(configuration, engine)
 	exampleJob := cron.NewExampleJob(zapLogger)
 	cronCron := cron.NewCron(dataData, zapLogger, exampleJob)

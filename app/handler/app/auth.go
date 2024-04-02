@@ -161,3 +161,7 @@ func (h AuthHandler) SLogin(c *gin.Context) {
 
 	response.Success(c, tokenData)
 }
+
+func (h AuthHandler) GetUserList(c *gin.Context) {
+
+}

@@ -68,9 +68,12 @@ queue:
     delay_exchange_name: 'example-delay'
 
 mongodb:
-  driver: 'mongodb'
   host: '127.0.0.1'
-  port: '27017'
+  port: 27017
+  database: 'SFRR'
+  log_mode: 'info'
+  enable_file_log_writer: true
+  log_filename: 'mongo.log'
 
 md5:
   salt: 'salt'

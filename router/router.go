@@ -23,6 +23,7 @@ func NewRouter(
 	authH *app.AuthHandler,
 	commonH *common.UploadHandler,
 	compH *app.CompHandler,
+	pageH *app.PageHandler,
 ) *gin.Engine {
 	if conf.App.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -46,7 +47,7 @@ func NewRouter(
 	router.Static("/storage", filepath.Join(rootDir, "storage/app/public"))
 
 	// 注册 api 分组路由
-	setApiGroupRoutes(router, jwtAuthM, authH, commonH, compH)
+	setApiGroupRoutes(router, jwtAuthM, authH, commonH, compH, pageH)
 
 	return router
 }

@@ -1,0 +1,23 @@
+{"level":"local.info","ts":"2024-04-02 22:27:07.966","msg":"mongo reqId:1 start on db:admin cmd:ping sql:{\"ping\": {\"$numberInt\":\"1\"},\"lsid\": {\"id\": {\"$binary\":{\"base64\":\"m4IBZyurTHaN5sWhhBB0qQ==\",\"subType\":\"04\"}}},\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:27:07.972","msg":"mongo reqId:1 exec cmd:ping success duration 88582 ns"}
+{"level":"local.info","ts":"2024-04-02 22:27:07.972","msg":"mongo reqId:9 start on db:admin cmd:endSessions sql:{\"endSessions\": [{\"id\": {\"$binary\":{\"base64\":\"m4IBZyurTHaN5sWhhBB0qQ==\",\"subType\":\"04\"}}}],\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:27:07.972","msg":"mongo reqId:9 exec cmd:endSessions success duration 64435 ns"}
+{"level":"local.info","ts":"2024-04-02 22:27:14.718","msg":"mongo reqId:1 start on db:admin cmd:ping sql:{\"ping\": {\"$numberInt\":\"1\"},\"lsid\": {\"id\": {\"$binary\":{\"base64\":\"1i/4y5FTTqG3Y6GdIdxf1Q==\",\"subType\":\"04\"}}},\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:27:14.718","msg":"mongo reqId:1 exec cmd:ping success duration 92288 ns"}
+{"level":"local.info","ts":"2024-04-02 22:27:14.718","msg":"mongo reqId:9 start on db:admin cmd:endSessions sql:{\"endSessions\": [{\"id\": {\"$binary\":{\"base64\":\"1i/4y5FTTqG3Y6GdIdxf1Q==\",\"subType\":\"04\"}}}],\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:27:14.718","msg":"mongo reqId:9 exec cmd:endSessions success duration 53503 ns"}
+{"level":"local.info","ts":"2024-04-02 22:32:43.781","msg":"mongo connect success~"}
+{"level":"local.info","ts":"2024-04-02 22:32:43.783","msg":"mongo reqId:1 start on db:admin cmd:ping sql:{\"ping\": {\"$numberInt\":\"1\"},\"lsid\": {\"id\": {\"$binary\":{\"base64\":\"8Sjlh5mwRAymJcXHCMvx/Q==\",\"subType\":\"04\"}}},\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:32:43.783","msg":"mongo reqId:1 exec cmd:ping success duration 60928 ns"}
+{"level":"local.info","ts":"2024-04-02 22:32:43.783","msg":"mongo reqId:9 start on db:admin cmd:endSessions sql:{\"endSessions\": [{\"id\": {\"$binary\":{\"base64\":\"8Sjlh5mwRAymJcXHCMvx/Q==\",\"subType\":\"04\"}}}],\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:32:43.783","msg":"mongo reqId:9 exec cmd:endSessions success duration 38324 ns"}
+{"level":"local.info","ts":"2024-04-02 22:33:58.123","msg":"mongo connect success~"}
+{"level":"local.info","ts":"2024-04-02 22:33:58.124","msg":"mongo reqId:1 start on db:admin cmd:ping sql:{\"ping\": {\"$numberInt\":\"1\"},\"lsid\": {\"id\": {\"$binary\":{\"base64\":\"LIlX1s/nStCDTeOa5Lz77g==\",\"subType\":\"04\"}}},\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:33:58.124","msg":"mongo reqId:1 exec cmd:ping success duration 57871 ns"}
+{"level":"local.info","ts":"2024-04-02 22:33:58.124","msg":"mongo reqId:9 start on db:admin cmd:endSessions sql:{\"endSessions\": [{\"id\": {\"$binary\":{\"base64\":\"LIlX1s/nStCDTeOa5Lz77g==\",\"subType\":\"04\"}}}],\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:33:58.124","msg":"mongo reqId:9 exec cmd:endSessions success duration 33004 ns"}
+{"level":"local.info","ts":"2024-04-02 22:34:27.637","msg":"mongo connect success~"}
+{"level":"local.info","ts":"2024-04-02 22:34:27.638","msg":"mongo reqId:1 start on db:admin cmd:ping sql:{\"ping\": {\"$numberInt\":\"1\"},\"lsid\": {\"id\": {\"$binary\":{\"base64\":\"maaRecv5QW2rFFGl7HC7kw==\",\"subType\":\"04\"}}},\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:34:27.638","msg":"mongo reqId:1 exec cmd:ping success duration 56729 ns"}
+{"level":"local.info","ts":"2024-04-02 22:34:27.638","msg":"mongo reqId:9 start on db:admin cmd:endSessions sql:{\"endSessions\": [{\"id\": {\"$binary\":{\"base64\":\"maaRecv5QW2rFFGl7HC7kw==\",\"subType\":\"04\"}}}],\"$db\": \"admin\"}"}
+{"level":"local.info","ts":"2024-04-02 22:34:27.638","msg":"mongo reqId:9 exec cmd:endSessions success duration 37843 ns"}

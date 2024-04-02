@@ -10,9 +10,12 @@ import (
 	"github.com/jassue/gin-wire/config"
 	"github.com/jassue/gin-wire/util/path"
 	"github.com/sony/sonyflake"
+	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,9 +31,9 @@ import (
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
-	NewData, NewDB, NewRedis, NewTransaction,
-	NewUserRepo, NewJwtRepo, NewMediaRepo, NewMongoDB,
-	NewCompRepo, NewCAMsgRepo,
+	NewData, NewDB, NewRedis, NewMongoDB, NewTransaction,
+	NewUserRepo, NewJwtRepo, NewMediaRepo,
+	NewCompRepo, NewCAMsgRepo, NewPageRepo,
 )
 
 // Data .
@@ -38,15 +41,16 @@ type Data struct {
 	db  *gorm.DB
 	rdb *redis.Client
 	sf  *sonyflake.Sonyflake
+	mdb *mongo.Database
 }
 
 // NewData .
-func NewData(logger *zap.Logger, db *gorm.DB, rdb *redis.Client, sf *sonyflake.Sonyflake) (*Data, func(), error) {
+func NewData(logger *zap.Logger, db *gorm.DB, rdb *redis.Client, sf *sonyflake.Sonyflake, mdb *mongo.Database) (*Data, func(), error) {
 	cleanup := func() {
 		logger.Info("closing the data resources")
 	}
 
-	return &Data{db: db, rdb: rdb, sf: sf}, cleanup, nil
+	return &Data{db: db, rdb: rdb, sf: sf, mdb: mdb}, cleanup, nil
 }
 
 // 数据库连接
@@ -149,23 +153,73 @@ func NewRedis(c *config.Configuration, gLog *zap.Logger) *redis.Client {
 	return client
 }
 
-func NewMongoDB(conf *config.Configuration, gLog *zap.Logger) *mongo.Client {
+// NewMongoDB mongo数据库连接
+func NewMongoDB(conf *config.Configuration, gLog *zap.Logger) *mongo.Database {
+
 	//dsn := "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := fmt.Sprintf("%s://%s:%s",
-		conf.MongoDB.Driver,
+	dsn := fmt.Sprintf("mongodb://%s:%s",
 		conf.MongoDB.Host,
-		&conf.MongoDB.Port,
+		strconv.Itoa(conf.MongoDB.Port),
 	)
 
-	//1.建立连接
-	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dsn).SetConnectTimeout(5*time.Second))
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
+	// client option
+	var clientOpt = options.Client().ApplyURI(dsn)
+
+	zapLogger := newLogger(conf, conf.MongoDB.LogFilename)
+
+	// log monitor
+	var logMonitor = event.CommandMonitor{
+		Started: func(ctx context.Context, startedEvent *event.CommandStartedEvent) {
+
+			msg := fmt.Sprintf("mongo reqId:%d start on db:%s cmd:%s sql:%+v", startedEvent.RequestID, startedEvent.DatabaseName,
+				startedEvent.CommandName, startedEvent.Command)
+			zapLogger.Info(msg)
+		},
+		Succeeded: func(ctx context.Context, succeededEvent *event.CommandSucceededEvent) {
+			msg := fmt.Sprintf("mongo reqId:%d exec cmd:%s success duration %d ns", succeededEvent.RequestID,
+				succeededEvent.CommandName, succeededEvent.DurationNanos)
+			zapLogger.Info(msg)
+		},
+		Failed: func(ctx context.Context, failedEvent *event.CommandFailedEvent) {
+			msg := fmt.Sprintf("mongo reqId:%d exec cmd:%s failed duration %d ns", failedEvent.RequestID,
+				failedEvent.CommandName, failedEvent.DurationNanos)
+			zapLogger.Error(msg)
+		},
+	}
+
+	// cmd monitor set
+	clientOpt.SetMonitor(&logMonitor)
+
+	//1.建立连接
+	mongoClient, err := mongo.Connect(ctx, clientOpt)
+	if nil != err {
+		fmt.Printf("mongo connect err %v\n", err)
+	} else {
+		//fmt.Printf("mongo connect success~\n")
+		zapLogger.Info("mongo connect success~")
+		defer func() {
+			if err = mongoClient.Disconnect(ctx); err != nil {
+				panic(err)
+			}
+		}()
+	}
+
+	//mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dsn).SetConnectTimeout(10*time.Second))
+	database := mongoClient.Database(conf.MongoDB.Database)
 	if err != nil {
 		//fmt.Print(err)
 		gLog.Error("mongo connect failed, err:", zap.Any("err", err))
 		panic("failed to connect mongo")
 	}
-	return mongoClient
+
+	if err := mongoClient.Ping(context.TODO(), readpref.Primary()); err != nil {
+		gLog.Error("mongo connect failed, err:", zap.Any("err", err))
+		panic("failed to connect mongo")
+	}
+	return database
 }
 
 type contextTxKey struct{}
@@ -192,4 +246,64 @@ func (d *Data) DB(ctx context.Context) *gorm.DB {
 // NewTransaction .
 func NewTransaction(d *Data) service.Transaction {
 	return d
+}
+
+// 初始化日志
+func newLogger(conf *config.Configuration, filename string) *zap.Logger {
+	var rootPath = path.RootPath()
+	var level zapcore.Level    // zap 日志等级
+	var zapOption []zap.Option // zap 配置项
+
+	logFileDir := conf.Log.RootDir
+	fmt.Println(filename)
+
+	//logFileDir := conf.Log.RootDir
+	if !filepath.IsAbs(logFileDir) {
+		logFileDir = filepath.Join(rootPath, logFileDir)
+	}
+
+	if ok, _ := path.Exists(logFileDir); !ok {
+		_ = os.Mkdir(conf.Log.RootDir, os.ModePerm)
+	}
+
+	switch conf.Log.Level {
+	case "debug":
+		level = zap.DebugLevel
+		zapOption = append(zapOption, zap.AddStacktrace(level))
+	case "info":
+		level = zap.InfoLevel
+	case "warn":
+		level = zap.WarnLevel
+	case "error":
+		level = zap.ErrorLevel
+		zapOption = append(zapOption, zap.AddStacktrace(level))
+	case "dpanic":
+		level = zap.DPanicLevel
+	case "panic":
+		level = zap.PanicLevel
+	case "fatal":
+		level = zap.FatalLevel
+	default:
+		level = zap.InfoLevel
+	}
+
+	// 调整编码器默认配置
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+		encoder.AppendString(time.Format("2006-01-02 15:04:05.000"))
+	}
+	encoderConfig.EncodeLevel = func(l zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
+		encoder.AppendString(conf.App.Env + "." + l.String())
+	}
+
+	loggerWriter := &lumberjack.Logger{
+		Filename:   filepath.Join(logFileDir, filename),
+		MaxSize:    conf.Log.MaxSize,
+		MaxBackups: conf.Log.MaxBackups,
+		MaxAge:     conf.Log.MaxAge,
+		Compress:   conf.Log.Compress,
+	}
+
+	zapLogger := zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(loggerWriter), level), zapOption...)
+	return zapLogger
 }

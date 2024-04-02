@@ -71,3 +71,11 @@ func (setInfo Password) GetMessages() ValidatorMessages {
 		"NewPassword.required": "新密码不能为空",
 	}
 }
+
+// 获取用户结构
+type GetUsers struct {
+	Name  string `form:"name" json:"name"`
+	ID    uint64 `form:"id" json:"id,string"`
+	Email string `form:"email" json:"email"`
+	PageDto
+}

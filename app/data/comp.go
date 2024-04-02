@@ -61,7 +61,7 @@ func (r *compRepo) Create(ctx context.Context, c *domain.Comp) (*domain.Comp, er
 }
 
 // FindCompsByQuery 查询Comps
-func (r *compRepo) FindCompsByQuery(ctx context.Context, param *request.CompList) ([]domain.Comp, int64, error) {
+func (r *compRepo) FindCompsByQuery(ctx context.Context, param *request.CompList, audit bool) ([]domain.Comp, int64, error) {
 	var comp model.Comp
 
 	query := r.data.db.Model(&comp)
@@ -75,6 +75,10 @@ func (r *compRepo) FindCompsByQuery(ctx context.Context, param *request.CompList
 	}
 	if param.ID != 0 {
 		query = query.Where("id = ?", param.ID)
+	}
+
+	if audit == true {
+		query = query.Where("is_list = ?", 2)
 	}
 
 	// 排序

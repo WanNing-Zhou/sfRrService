@@ -68,6 +68,26 @@ func (h *CompHandler) GetCompList(c *gin.Context) {
 	response.Success(c, &resp.RespList{List: compList, Total: total})
 }
 
+// GetCompPassedList 获取通过审核的组件列表
+func (h CompHandler) GetCompPassedList(c *gin.Context) {
+	var form request.CompList
+
+	if err := c.ShouldBindQuery(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	compList, total, err := h.compS.GetCompsPassed(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, &resp.RespList{List: compList, Total: total})
+
+}
+
 func (h *CompHandler) GetCompInfo(c *gin.Context) {
 
 	compId := c.Query("id")
