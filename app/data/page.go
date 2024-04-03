@@ -34,10 +34,12 @@ func (p pageRepo) FindByCreateId(ctx context.Context, u uint64) (*domain.Comp, e
 
 func (p pageRepo) Create(ctx context.Context, comp *domain.Page) (*domain.Page, error) {
 
+	var page domain.Page
 	ash := bson.M{"name": "kkx"}
 	collections := p.data.mdb.Collection("myCollection")
 	//findAll, _ := collections.Find(context.TODO(), nil)
 	one, err := collections.InsertOne(context.TODO(), ash)
+	collections.FindOne(context.TODO(), ash).Decode(page)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +48,8 @@ func (p pageRepo) Create(ctx context.Context, comp *domain.Page) (*domain.Page, 
 	fmt.Println("执行了")
 	//collections.Collection("trainers")
 	//TODO implement me
-	panic("implement me")
+	//panic("implement me")
+	return &page, nil
 }
 
 func (p pageRepo) FindCompsByQuery(ctx context.Context, list *request.CompList, b bool) ([]domain.Comp, int64, error) {
