@@ -2,12 +2,16 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/jassue/gin-wire/app/domain"
 	"github.com/jassue/gin-wire/app/pkg/request"
 	"github.com/jassue/gin-wire/app/service"
+	"github.com/jassue/gin-wire/util/paginate"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
+	"time"
 )
 
 type pageRepo struct {
@@ -22,9 +26,29 @@ func NewPageRepo(data *Data, log *zap.Logger) service.PageRepo {
 	}
 }
 
-func (p pageRepo) FindByID(ctx context.Context, u uint64) (*domain.Comp, error) {
+func (p pageRepo) FindByID(ctx context.Context, id string) (*domain.Page, error) {
 	//TODO implement me
-	panic("implement me")
+	collections := p.data.mdb.Collection("page")
+	objID, _ := primitive.ObjectIDFromHex(id)
+	fmt.Println("objID", objID)
+	var res *domain.Page
+	err := collections.FindOne(ctx, bson.M{"_id": objID}).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("findById", *res)
+	m := res.Data.(primitive.D)
+	bsonBytes, _ := bson.Marshal(m)
+	var jsonData map[string]interface{}
+	_ = json.Unmarshal(bsonBytes, &jsonData)
+
+	fmt.Println("bsonBytes", bsonBytes)
+	fmt.Println(m)
+	fmt.Println("jsonData", jsonData)
+	res.Data = jsonData
+
+	return res, nil
 }
 
 func (p pageRepo) FindByCreateId(ctx context.Context, u uint64) (*domain.Comp, error) {
@@ -32,29 +56,68 @@ func (p pageRepo) FindByCreateId(ctx context.Context, u uint64) (*domain.Comp, e
 	panic("implement me")
 }
 
-func (p pageRepo) Create(ctx context.Context, comp *domain.Page) (*domain.Page, error) {
+// Create 创建
+func (p pageRepo) Create(ctx context.Context, comp *domain.Page) error {
 
-	var page domain.Page
-	ash := bson.M{"name": "kkx"}
-	collections := p.data.mdb.Collection("myCollection")
-	//findAll, _ := collections.Find(context.TODO(), nil)
-	one, err := collections.InsertOne(context.TODO(), ash)
-	collections.FindOne(context.TODO(), ash).Decode(page)
+	//ash := bson.M{"name": "kkx"}
+	comp.CreatedAt = time.Now()
+	comp.UpdatedAt = time.Now()
+	collections := p.data.mdb.Collection("page")
+	_, err := collections.InsertOne(context.TODO(), comp)
+
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	fmt.Println(one)
-	fmt.Println("执行了")
-	//collections.Collection("trainers")
-	//TODO implement me
-	//panic("implement me")
-	return &page, nil
+	return nil
 }
 
-func (p pageRepo) FindCompsByQuery(ctx context.Context, list *request.CompList, b bool) ([]domain.Comp, int64, error) {
-	//TODO implement me
-	panic("implement me")
+// FindPagesByQuery 查询
+func (p pageRepo) FindPagesByQuery(ctx context.Context, params *request.GetPages, b bool) ([]domain.Page, int64, error) {
+
+	findOptions := paginate.MPaginate(&request.PageDto{Page: params.Page, PageSize: params.PageSize})
+	collections := p.data.mdb.Collection("page")
+	filter := bson.D{}
+	if params.Title != "" {
+		filter = append(filter, bson.E{
+			Key: "title",
+			//i 表示不区分大小写
+			Value: bson.M{"$regex": primitive.Regex{Pattern: ".*" + params.Title + ".*", Options: "i"}},
+		})
+	}
+	if params.ID != "" {
+		filter = append(filter, bson.E{
+			Key:   "_id",
+			Value: params.ID,
+		})
+	}
+	if params.CreateId != 0 {
+		filter = append(filter, bson.E{
+			Key:   "create_id",
+			Value: params.CreateId,
+		})
+	}
+	count, err2 := collections.CountDocuments(ctx, &filter)
+	if err2 != nil {
+		return nil, 0, err2
+	}
+
+	cur, err := collections.Find(ctx, &filter, findOptions)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var res []domain.Page
+	//var rss []bson.M
+	err = cur.All(ctx, &res)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	//fmt.Println(res)
+
+	return res, count, nil
 }
 
 func (p pageRepo) UpdateComp(ctx context.Context, comp *domain.Comp) (*domain.Comp, error) {

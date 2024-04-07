@@ -21,6 +21,7 @@ func setApiGroupRoutes(
 	group := router.Group("/api")
 	group.POST("/auth/register", authH.Register)
 	group.POST("/auth/login", authH.Login)
+	group.GET("/page/info", pageH.Info)
 	group.POST("/mdbtest", pageH.NewPage)
 
 	// 权限校验
@@ -31,7 +32,8 @@ func setApiGroupRoutes(
 		authGroup.POST("/image_upload", commonH.ImageUpload)
 		authGroup.POST("/auth/info", authH.SetInfo)
 		authGroup.POST("/auth/password", authH.SetPassword)
-		authGroup.POST("/page")
+		authGroup.POST("/page/create", pageH.NewPage)
+		authGroup.GET("/page/list", pageH.GetPageList)
 	}
 
 	// 需要开发者以上权限

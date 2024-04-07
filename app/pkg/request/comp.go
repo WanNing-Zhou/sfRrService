@@ -85,5 +85,12 @@ func (newPAge NewPage) GetMessage() ValidatorMessages {
 		"CreateId.required": "组件id不能为空",
 		"Data.required":     "审核状态不能为空",
 	}
+}
 
+type GetPages struct {
+	CreateId uint64 `form:"create_id" json:"create_id,string,omitempty"`    // 创建人
+	Title    string `form:"title" json:"title" bson:"title,omitempty,like"` // 页面标题
+	ID       string `form:"id" json:"id,string" bson:"_id,omitempty,omitempty"`
+	// 组件
+	PageDto
 }
