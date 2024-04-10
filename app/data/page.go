@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/jassue/gin-wire/app/domain"
 	"github.com/jassue/gin-wire/app/pkg/request"
@@ -36,17 +35,6 @@ func (p pageRepo) FindByID(ctx context.Context, id string) (*domain.Page, error)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("findById", *res)
-	m := res.Data.(primitive.D)
-	bsonBytes, _ := bson.Marshal(m)
-	var jsonData map[string]interface{}
-	_ = json.Unmarshal(bsonBytes, &jsonData)
-
-	fmt.Println("bsonBytes", bsonBytes)
-	fmt.Println(m)
-	fmt.Println("jsonData", jsonData)
-	res.Data = jsonData
 
 	return res, nil
 }

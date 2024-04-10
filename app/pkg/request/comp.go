@@ -74,10 +74,10 @@ func (auditComp AuditComp) GetMessages() ValidatorMessages {
 }
 
 type NewPage struct {
-	CreateId uint64      `form:"create_id" json:"create_id,string"` // 创建人
-	Data     interface{} `form:"data" json:"data"`                  // 页面数据
-	Info     string      `form:"info" json:"info"`                  // 页面信息
-	Title    string      `form:"info" json:"title"`                 // 页面标题
+	CreateId uint64 `form:"create_id" json:"create_id,string"` // 创建人
+	Data     string `form:"data" json:"data"`                  // 页面数据
+	Info     string `form:"info" json:"info"`                  // 页面信息
+	Title    string `form:"info" json:"title"`                 // 页面标题
 }
 
 func (newPAge NewPage) GetMessage() ValidatorMessages {

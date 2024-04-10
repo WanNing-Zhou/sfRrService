@@ -108,6 +108,7 @@ func (h *PageHandler) Info(c *gin.Context) {
 	}
 
 	page, err := h.pageS.FindById(c, id)
+
 	if err != nil {
 		response.FailByErr(c, err)
 		return

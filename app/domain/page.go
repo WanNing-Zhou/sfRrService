@@ -10,7 +10,7 @@ type Page struct {
 	ID        primitive.ObjectID `json:"id,string" bson:"_id,omitempty"`              // 页面id
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`                // 创建时间
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`                // 更新时间
-	Data      interface{}        `json:"data,string" bson:"data,string"`              // 页面数据
+	Data      string             `json:"data,string" bson:"data,string"`              // 页面数据
 	Info      string             `json:"info" bson:"info"`                            // 页面信息
 	Title     string             `json:"title" bson:"title"`                          // 页面标题
 }
