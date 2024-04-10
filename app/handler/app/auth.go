@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jassue/gin-wire/app/domain"
 	"github.com/jassue/gin-wire/app/pkg/request"
+	"github.com/jassue/gin-wire/app/pkg/resp"
 	"github.com/jassue/gin-wire/app/pkg/response"
 	"github.com/jassue/gin-wire/app/service"
 	"go.uber.org/zap"
@@ -163,5 +164,21 @@ func (h AuthHandler) SLogin(c *gin.Context) {
 }
 
 func (h AuthHandler) GetUserList(c *gin.Context) {
+	var form request.GetUsers
+	if err := c.ShouldBindQuery(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
 
+	users, total, err := h.userS.GetUsers(c, &form)
+
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, &resp.RespList{
+		List:  users,
+		Total: total,
+	})
 }

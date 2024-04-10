@@ -17,6 +17,7 @@ type UserRepo interface {
 	FindByEmail(context.Context, string) (*domain.User, error)               // 根据Email寻找用户
 	Update(context.Context, *domain.User) (*domain.User, error)              // 更新用户信息
 	UpdatePassword(context.Context, *request.Password) (*domain.User, error) // 设置密码
+	FindByQuery(ctx context.Context, users *request.GetUsers) ([]domain.User, int64, error)
 }
 
 type UserService struct {
@@ -124,4 +125,14 @@ func (s *UserService) SLogin(ctx *gin.Context, email, password string) (*domain.
 		return nil, cErr.BadRequest("该用户无管理员权限")
 	}
 	return u, nil
+}
+
+func (s *UserService) GetUsers(ctx *gin.Context, params *request.GetUsers) ([]domain.User, int64, error) {
+	// 根据分页信息查询用户
+	users, total, err := s.uRepo.FindByQuery(ctx, params)
+	if err != nil {
+		return nil, 0, cErr.BadRequest("查询失败")
+	}
+
+	return users, total, nil
 }

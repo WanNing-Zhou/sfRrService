@@ -6,12 +6,66 @@ import (
 	"github.com/jassue/gin-wire/app/model"
 	"github.com/jassue/gin-wire/app/pkg/request"
 	"github.com/jassue/gin-wire/app/service"
+	"github.com/jassue/gin-wire/util/paginate"
 	"go.uber.org/zap"
 )
 
 type userRepo struct {
 	data *Data
 	log  *zap.Logger
+}
+
+func NewUserRepo(data *Data, log *zap.Logger) service.UserRepo {
+	return &userRepo{
+		data: data,
+		log:  log,
+	}
+}
+
+// FindByQuery 根据条件查询用户列表
+func (r *userRepo) FindByQuery(ctx context.Context, param *request.GetUsers) ([]domain.User, int64, error) {
+	var user model.User
+
+	query := r.data.db.Model(&user)
+
+	// 对名字进行模糊查询
+	if param.Name != "" {
+		query = query.Where("title LIKE ?", "%"+param.Name+"%")
+	}
+
+	if param.ID != 0 {
+		query = query.Where("id = ?", param.ID)
+	}
+	if param.Email != "" {
+		query = query.Where("email = ?", param.Email)
+	}
+
+	// 排序
+	query = query.Order("updated_at desc")
+
+	pageReq := &request.PageDto{
+		Page:     param.Page,
+		PageSize: param.PageSize,
+	}
+
+	var userList []model.User
+	var total int64
+	// 获取获取过滤后数据的总条数
+	query.Count(&total)
+
+	err := query.Scopes(paginate.Paginate(pageReq)).Find(&userList).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var users []domain.User
+
+	for _, v := range userList {
+		v.Password = ""
+		users = append(users, *v.ToDomain())
+	}
+
+	return users, total, nil
 }
 
 func (r *userRepo) UpdatePassword(ctx context.Context, params *request.Password) (*domain.User, error) {
@@ -31,13 +85,6 @@ func (r *userRepo) UpdatePassword(ctx context.Context, params *request.Password)
 		Name: user.Name,
 		Auth: user.Auth,
 	}, nil
-}
-
-func NewUserRepo(data *Data, log *zap.Logger) service.UserRepo {
-	return &userRepo{
-		data: data,
-		log:  log,
-	}
 }
 
 func (r *userRepo) FindByID(ctx context.Context, id uint64) (*domain.User, error) {

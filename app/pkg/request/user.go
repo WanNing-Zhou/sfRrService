@@ -72,7 +72,7 @@ func (setInfo Password) GetMessages() ValidatorMessages {
 	}
 }
 
-// 获取用户结构
+// GetUsers 获取用户结构
 type GetUsers struct {
 	Name  string `form:"name" json:"name"`
 	ID    uint64 `form:"id" json:"id,string"`
