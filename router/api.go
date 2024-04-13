@@ -21,7 +21,7 @@ func setApiGroupRoutes(
 	group := router.Group("/api")
 	group.POST("/auth/register", authH.Register)
 	group.POST("/auth/login", authH.Login)
-	group.GET("/page/info", pageH.Info)
+	group.GET("/pagmae/info", pageH.Info)
 	group.POST("/mdbtest", pageH.NewPage)
 
 	// 权限校验
@@ -53,12 +53,14 @@ func setApiGroupRoutes(
 	{
 		// 获取用户列表
 		sAuthGroup.GET("/user/list", authH.GetUserList)
+		// 获取用户信息
+		sAuthGroup.GET("/user/info", authH.GetUserInfo)
 		// 创建管理员账号
-		sAuthGroup.POST("/sUser/create")
+		sAuthGroup.POST("/sUser/create", authH.CreatSUser)
 		// 组件审核
 		sAuthGroup.POST("/comp/audit", compH.AuditComp)
 		// 组件删除
-		sAuthGroup.POST("/comp/delete")
+		sAuthGroup.POST("/comp/delete", authH.DeleteUser)
 	}
 
 	csmGroup := group.Group("/csm")

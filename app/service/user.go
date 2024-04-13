@@ -18,6 +18,7 @@ type UserRepo interface {
 	Update(context.Context, *domain.User) (*domain.User, error)              // 更新用户信息
 	UpdatePassword(context.Context, *request.Password) (*domain.User, error) // 设置密码
 	FindByQuery(ctx context.Context, users *request.GetUsers) ([]domain.User, int64, error)
+	DeleteByID(ctx context.Context, uint642 uint64) error
 }
 
 type UserService struct {
@@ -42,6 +43,7 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
 	u, err := s.uRepo.Create(ctx, &domain.User{
 		Name: param.Name,
 		//Mobile:   param.Mobile,
+		Auth:     param.Auth,
 		Password: hash.BcryptMake([]byte(param.Password)),
 		Email:    param.Email,
 	})
@@ -135,4 +137,14 @@ func (s *UserService) GetUsers(ctx *gin.Context, params *request.GetUsers) ([]do
 	}
 
 	return users, total, nil
+}
+
+func (s *UserService) DeleteUser(ctx *gin.Context, id uint64) error { // 删除用户
+	err := s.uRepo.DeleteByID(ctx, id)
+	if err != nil {
+		return cErr.BadRequest("删除失败")
+
+	}
+	return nil
+
 }

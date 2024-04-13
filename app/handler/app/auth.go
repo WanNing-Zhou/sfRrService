@@ -30,6 +30,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
+	// 用户注册时直接赋予开发者权限
+	form.Auth = 1
+
 	u, err := h.userS.Register(c, &form)
 	if err != nil {
 		response.FailByErr(c, err)
@@ -181,4 +184,50 @@ func (h AuthHandler) GetUserList(c *gin.Context) {
 		List:  users,
 		Total: total,
 	})
+}
+
+func (h AuthHandler) GetUserInfo(c *gin.Context) {
+	var form request.GetUserInfo
+	if err := c.ShouldBindQuery(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	user, err := h.userS.GetUserInfo(c, form.ID)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+	response.Success(c, user)
+}
+
+func (h AuthHandler) CreatSUser(c *gin.Context) {
+	var form request.Register
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	form.Auth = 0
+	_, err := h.userS.Register(c, &form)
+	if err != nil {
+		response.FailByErr(c, err)
+		return
+	}
+
+	response.Success(c, resp.SuccessData{
+		Message: "创建成功",
+	})
+
+}
+
+func (h AuthHandler) DeleteUser(c *gin.Context) {
+	var form request.DeleteUser
+	if err := c.ShouldBindJSON(&form); err != nil {
+		response.FailByErr(c, request.GetError(form, err))
+		return
+	}
+
+	h.userS.DeleteUser(c, form.ID)
+
 }

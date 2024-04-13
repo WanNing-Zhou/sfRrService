@@ -22,6 +22,15 @@ func NewUserRepo(data *Data, log *zap.Logger) service.UserRepo {
 	}
 }
 
+func (r *userRepo) DeleteByID(ctx context.Context, id uint64) error {
+	var user model.User
+	user.ID = id
+	if err := r.data.db.Model(user).Delete(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // FindByQuery 根据条件查询用户列表
 func (r *userRepo) FindByQuery(ctx context.Context, param *request.GetUsers) ([]domain.User, int64, error) {
 	var user model.User
@@ -30,7 +39,7 @@ func (r *userRepo) FindByQuery(ctx context.Context, param *request.GetUsers) ([]
 
 	// 对名字进行模糊查询
 	if param.Name != "" {
-		query = query.Where("title LIKE ?", "%"+param.Name+"%")
+		query = query.Where("name LIKE ?", "%"+param.Name+"%")
 	}
 
 	if param.ID != 0 {
@@ -126,6 +135,7 @@ func (r *userRepo) Create(ctx context.Context, u *domain.User) (*domain.User, er
 	user.Mobile = u.Mobile
 	user.Password = u.Password
 	user.Email = u.Email
+	user.Auth = u.Auth
 
 	if err = r.data.DB(ctx).Create(&user).Error; err != nil {
 		return nil, err

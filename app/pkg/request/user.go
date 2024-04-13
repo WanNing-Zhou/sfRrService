@@ -7,6 +7,7 @@ type Register struct {
 	//Mobile string `form:"mobile" json:"mobile" binding:"required,mobile"`
 	Password string `form:"password" json:"password" binding:"required"`
 	Email    string `form:"email" json:"email" binding:"required,email"`
+	Auth     int    `form:"auth" json:"auth"`
 }
 
 func (register Register) GetMessages() ValidatorMessages {
@@ -78,4 +79,12 @@ type GetUsers struct {
 	ID    uint64 `form:"id" json:"id,string"`
 	Email string `form:"email" json:"email"`
 	PageDto
+}
+
+type GetUserInfo struct {
+	ID string `form:"id" json:"id,string"`
+}
+
+type DeleteUser struct {
+	ID uint64 `form:"id" json:"id,string"`
 }
